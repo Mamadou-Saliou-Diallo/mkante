@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Générateur Carte Membre - RECTO</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial, sans-serif;
+    background:#eef2f7;
+    padding:20px;
+}
+
+/* TITRE */
+
+.main-title{
+    text-align:center;
+    color:#003366;
+    margin-bottom:25px;
+}
+
+/* LAYOUT */
+
+.container{
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    gap:30px;
+    flex-wrap:wrap;
+}
+
+/* FORMULAIRE */
+
+form{
+    width:280px;
+    background:#fff;
+    padding:18px;
+    border-radius:12px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.1);
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+form label{
+    font-size:13px;
+    font-weight:bold;
+    color:#003366;
+}
+
+form input{
+    padding:10px;
+    border-radius:7px;
+    border:1px solid #ccc;
+    font-size:13px;
+}
+
+form button{
+    padding:11px;
+    border:none;
+    border-radius:7px;
+    background:#003366;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+form button:hover{
+    background:#0055aa;
+}
+
+/* CONTENEUR CARTES */
+
+#cardsContainer{
+    display:flex;
+    flex-wrap:wrap;
+    gap:20px;
+    justify-content:center;
+}
+
+/* CARTE */
+
+.card{
+    width:85.6mm;
+    height:54mm;
+
+    border-radius:14px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #003366,
+        #0055aa,
+        #0077cc
+    );
+
+    position:relative;
+
+    overflow:hidden;
+
+    box-shadow:
+    0 10px 20px rgba(0,0,0,0.25);
+
+    color:white;
+}
+
+/* DECORATION */
+
+.card::before{
+    content:"";
+
+    position:absolute;
+
+    width:180px;
+    height:180px;
+
+    background:rgba(255,255,255,0.08);
+
+    border-radius:50%;
+
+    top:-60px;
+    right:-60px;
+}
+
+.card::after{
+    content:"";
+
+    position:absolute;
+
+    width:140px;
+    height:140px;
+
+    background:rgba(255,255,255,0.06);
+
+    border-radius:50%;
+
+    bottom:-60px;
+    left:-40px;
+}
+
+/* HEADER LOGOS */
+
+.card-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:8px 10px 0 10px;
+    position:relative;
+    z-index:2;
+}
+
+.top-logo{
+    width:35px;
+    height:35px;
+    object-fit:contain;
+    background:white;
+    border-radius:50%;
+    padding:2px;
+}
+
+.header-title{
+    font-size:15px;
+    font-weight:bold;
+    color:white;
+    letter-spacing:1px;
+}
+
+/* BODY */
+
+.card-body{
+    display:flex;
+    gap:12px;
+    padding:5px 10px;
+    position:relative;
+    z-index:2;
+}
+
+/* PHOTO */
+
+.photo{
+    width:75px;
+    height:90px;
+    background:white;
+    border-radius:8px;
+    overflow:hidden;
+    border:2px solid rgba(255,255,255,0.4);
+}
+
+.photo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+/* INFOS */
+
+.infos{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+    font-size:10px;
+}
+
+.member-name{
+    font-size:15px;
+    font-weight:bold;
+    color:#ffcc00;
+}
+
+/* LIGNES */
+
+.info-line{
+    display:flex;
+    gap:5px;
+}
+
+.label{
+    font-weight:bold;
+}
+
+/* QR CODE */
+
+.qr{
+    position:absolute;
+    bottom:10px;
+    right:80px;
+    background:white;
+    padding:4px;
+    border-radius:6px;
+    z-index:2;
+}
+
+/* BADGE FONCTION */
+
+.badge{
+    position:absolute;
+    bottom:10px;
+    right:10px;
+    background:#ff0000;
+    padding:4px 10px;
+    border-radius:20px;
+    font-size:9px;
+    font-weight:bold;
+    z-index:2;
+}
+
+/* DELETE BUTTON */
+
+.delete-btn{
+    position:absolute;
+    bottom:10px;
+    left:10px;
+    width:22px;
+    height:22px;
+    border:none;
+    border-radius:50%;
+    background:white;
+    color:red;
+    font-weight:bold;
+    cursor:pointer;
+    z-index:2;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:768px){
+
+    .container{
+        flex-direction:column;
+        align-items:center;
+    }
+
+    form{
+        width:95%;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<h2 class="main-title">
+Générateur Carte Membre - RECTO
+</h2>
+
+<div class="container">
+
+<form id="cardForm">
+
+<label>Nom</label>
+<input type="text" id="nom" required>
+
+<label>Prénom</label>
+<input type="text" id="prenom" required>
+
+<label>Fonction</label>
+<input type="text" id="fonction" required>
+
+<label>ID Carte</label>
+<input type="text" id="idCarte" placeholder="Automatique si vide">
+
+<label>Pays de résidence</label>
+<input type="text" id="pays" required>
+
+<label>Date de naissance</label>
+<input type="date" id="dob" required>
+
+<label>Lieu de naissance</label>
+<input type="text" id="lieuNaissance" required>
+
+<label>Photo</label>
+<input type="file" id="photo" accept="image/*">
+
+<button type="submit">
+Créer la carte
+</button>
+
+</form>
+
+<div id="cardsContainer"></div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script>
+
+const form = document.getElementById("cardForm");
+
+const cardsContainer = document.getElementById("cardsContainer");
+
+form.addEventListener("submit", function(e){
+
+    e.preventDefault();
+
+    const nom = document.getElementById("nom").value;
+
+    const prenom = document.getElementById("prenom").value;
+
+    const fonction = document.getElementById("fonction").value;
+
+    const pays = document.getElementById("pays").value;
+
+    const dob = document.getElementById("dob").value;
+
+    const lieuNaissance = document.getElementById("lieuNaissance").value;
+
+    let idCarte = document.getElementById("idCarte").value;
+
+    if(!idCarte){
+
+        idCarte = "KWR" + Date.now().toString().slice(-6);
+
+    }
+
+    const safeId = idCarte.replace(/\s+/g,"_");
+
+    const photoInput = document.getElementById("photo");
+
+    let photoURL = "https://via.placeholder.com/150";
+
+    const createCard = ()=>{
+
+        const card = document.createElement("div");
+
+        card.classList.add("card");
+
+        card.innerHTML = `
+
+        <!-- HEADER -->
+
+        <div class="card-header">
+
+            <img 
+            src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+            class="top-logo"
+            >
+
+            <div class="header-title">
+            KÉWÉRÉ
+            </div>
+
+            <img 
+            src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
+            class="top-logo"
+            >
+
+        </div>
+
+        <!-- BODY -->
+
+        <div class="card-body">
+
+            <div class="photo">
+
+                <img src="${photoURL}">
+
+            </div>
+
+            <div class="infos">
+
+                <div class="member-name">
+
+                ${prenom} ${nom}
+
+                </div>
+
+                <div class="info-line">
+                <span class="label">ID :</span> ${idCarte}
+                </div>
+
+                <div class="info-line">
+                <span class="label">Pays de résidence :</span> ${pays}
+                </div>
+
+                <div class="info-line">
+                <span class="label">Date de naissance :</span> ${dob}
+                </div>
+
+                <div class="info-line">
+                <span class="label">Lieu de naissance :</span> ${lieuNaissance}
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- QR -->
+
+        <div class="qr" id="qr-${safeId}">
+        </div>
+
+        <!-- FONCTION -->
+
+        <div class="badge">
+        ${fonction}
+        </div>
+
+        <!-- DELETE -->
+
+        <button class="delete-btn">
+        ×
+        </button>
+
+        `;
+
+        cardsContainer.appendChild(card);
+
+        /* QR CODE */
+
+        new QRCode(document.getElementById(`qr-${safeId}`), {
+
+            text:`https://kewere.com/member/${safeId}`,
+
+            width:45,
+
+            height:45
+
+        });
+
+        /* DELETE */
+
+        card.querySelector(".delete-btn")
+
+        .addEventListener("click", ()=>{
+
+            card.remove();
+
+        });
+
+        form.reset();
+
+    };
+
+    /* PHOTO */
+
+    if(photoInput.files[0]){
+
+        const reader = new FileReader();
+
+        reader.onload = function(e){
+
+            photoURL = e.target.result;
+
+            createCard();
+
+        };
+
+        reader.readAsDataURL(photoInput.files[0]);
+
+    }
+
+    else{
+
+        createCard();
+
+    }
+
+});
+
+</script>
+
+</body>
+</html>
