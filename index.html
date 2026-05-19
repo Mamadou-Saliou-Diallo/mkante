@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Générateur Carte Membre - RECTO</title>
+<title>Générateur Carte Membre - PVC PRO</title>
 
 <style>
 
@@ -20,8 +20,6 @@ body{
     padding:20px;
 }
 
-/* TITRE */
-
 .main-title{
     text-align:center;
     color:#003366;
@@ -29,7 +27,6 @@ body{
 }
 
 /* LAYOUT */
-
 .container{
     display:flex;
     justify-content:center;
@@ -38,8 +35,7 @@ body{
     flex-wrap:wrap;
 }
 
-/* FORMULAIRE */
-
+/* FORM */
 form{
     width:280px;
     background:#fff;
@@ -61,11 +57,10 @@ form input{
     padding:10px;
     border-radius:7px;
     border:1px solid #ccc;
-    font-size:13px;
 }
 
 form button{
-    padding:11px;
+    padding:10px;
     border:none;
     border-radius:7px;
     background:#003366;
@@ -74,12 +69,7 @@ form button{
     cursor:pointer;
 }
 
-form button:hover{
-    background:#0055aa;
-}
-
-/* CONTENEUR CARTES */
-
+/* CARTES */
 #cardsContainer{
     display:flex;
     flex-wrap:wrap;
@@ -87,110 +77,55 @@ form button:hover{
     justify-content:center;
 }
 
-/* CARTE */
-
+/* CARTE PVC */
 .card{
     width:85.6mm;
     height:54mm;
-    border-radius:14px;
+    border-radius:10px;
 
-    background:
-    linear-gradient(
-        135deg,
-        #003366,
-        #0055aa,
-        #0077cc
-    );
+    background:linear-gradient(135deg,#003366,#0055aa,#0077cc);
 
     position:relative;
     overflow:hidden;
 
-    box-shadow:
-    0 10px 20px rgba(0,0,0,0.25);
-
     color:white;
-}
-
-/* DECORATION */
-
-.card::before{
-    content:"";
-
-    position:absolute;
-
-    width:180px;
-    height:180px;
-
-    background:rgba(255,255,255,0.08);
-
-    border-radius:50%;
-
-    top:-60px;
-    right:-60px;
-}
-
-.card::after{
-    content:"";
-
-    position:absolute;
-
-    width:140px;
-    height:140px;
-
-    background:rgba(255,255,255,0.06);
-
-    border-radius:50%;
-
-    bottom:-60px;
-    left:-40px;
+    box-shadow:0 10px 20px rgba(0,0,0,0.25);
 }
 
 /* HEADER */
-
 .card-header{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    padding:8px 10px 0 10px;
-    position:relative;
-    z-index:2;
+    padding:8px 10px 0;
 }
 
 .top-logo{
     width:35px;
     height:35px;
-    object-fit:contain;
     background:white;
     border-radius:50%;
     padding:2px;
 }
 
 .header-title{
-    font-size:15px;
+    font-size:14px;
     font-weight:bold;
-    color:white;
-    letter-spacing:1px;
 }
 
 /* BODY */
-
 .card-body{
     display:flex;
-    gap:12px;
+    gap:10px;
     padding:5px 10px;
-    position:relative;
-    z-index:2;
 }
 
-/* PHOTO */
-
 .photo{
-    width:75px;
-    height:90px;
+    width:70px;
+    height:85px;
     background:white;
     border-radius:8px;
     overflow:hidden;
-    border:2px solid rgba(255,255,255,0.4);
 }
 
 .photo img{
@@ -199,37 +134,31 @@ form button:hover{
     object-fit:cover;
 }
 
-/* INFOS */
-
 .infos{
     display:flex;
     flex-direction:column;
-    gap:7px;
+    gap:5px;
     font-size:10px;
-
-    padding-right:70px;
+    padding-right:60px;
 }
 
 .member-name{
-    font-size:15px;
+    font-size:14px;
     font-weight:bold;
     color:#ffcc00;
 }
 
-/* LIGNES */
-
 .info-line{
     display:flex;
-    gap:5px;
     flex-wrap:wrap;
+    gap:4px;
 }
 
 .label{
     font-weight:bold;
 }
 
-/* QR CODE */
-
+/* QR */
 .qr{
     position:absolute;
     bottom:10px;
@@ -237,11 +166,9 @@ form button:hover{
     background:white;
     padding:4px;
     border-radius:6px;
-    z-index:2;
 }
 
 /* DELETE */
-
 .delete-btn{
     position:absolute;
     bottom:10px;
@@ -252,24 +179,53 @@ form button:hover{
     border-radius:50%;
     background:white;
     color:red;
-    font-weight:bold;
     cursor:pointer;
-    z-index:2;
+}
+
+/* 🖨️ PRINT MODE PVC VERTICAL */
+@media print {
+
+    body{
+        background:white;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .main-title,
+    form{
+        display:none !important;
+    }
+
+    #cardsContainer{
+        display:flex;
+        flex-direction:column;
+
+        align-items:center;
+        justify-content:flex-start;
+
+        gap:6mm;
+
+        padding:10mm;
+    }
+
+    .card{
+        width:85.6mm;
+        height:54mm;
+
+        box-shadow:none !important;
+        page-break-inside: avoid;
+
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
 }
 
 /* RESPONSIVE */
-
 @media(max-width:768px){
-
     .container{
         flex-direction:column;
         align-items:center;
     }
-
-    form{
-        width:95%;
-    }
-
 }
 
 </style>
@@ -277,9 +233,7 @@ form button:hover{
 
 <body>
 
-<h2 class="main-title">
-Générateur Carte Membre - RECTO
-</h2>
+<h2 class="main-title">Générateur Carte Membre - PVC PRO</h2>
 
 <div class="container">
 
@@ -307,10 +261,12 @@ Générateur Carte Membre - RECTO
 <input type="text" id="lieuNaissance" required>
 
 <label>Photo</label>
-<input type="file" id="photo" accept="image/*">
+<input type="file" id="photo">
 
-<button type="submit">
-Créer la carte
+<button type="submit">Créer la carte</button>
+
+<button type="button" onclick="window.print()">
+🖨️ Imprimer PVC
 </button>
 
 </form>
@@ -324,170 +280,87 @@ Créer la carte
 <script>
 
 const form = document.getElementById("cardForm");
-
 const cardsContainer = document.getElementById("cardsContainer");
 
 form.addEventListener("submit", function(e){
-
     e.preventDefault();
 
     const nom = document.getElementById("nom").value;
-
     const prenom = document.getElementById("prenom").value;
-
     const fonction = document.getElementById("fonction").value;
-
     const pays = document.getElementById("pays").value;
-
     const dob = document.getElementById("dob").value;
-
     const lieuNaissance = document.getElementById("lieuNaissance").value;
 
     let idCarte = document.getElementById("idCarte").value;
-
     if(!idCarte){
-
         idCarte = "KWR" + Date.now().toString().slice(-6);
-
     }
-
-    const safeId = idCarte.replace(/\s+/g,"_");
 
     const photoInput = document.getElementById("photo");
 
     let photoURL = "https://via.placeholder.com/150";
 
-    const createCard = ()=>{
+    function createCard(){
 
         const card = document.createElement("div");
-
         card.classList.add("card");
 
         card.innerHTML = `
-
-        <!-- HEADER -->
-
         <div class="card-header">
-
-            <img 
-            src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-            class="top-logo"
-            >
-
-            <div class="header-title">
-            KÉWÉRÉ
-            </div>
-
-            <img 
-            src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
-            class="top-logo"
-            >
-
+            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="top-logo">
+            <div class="header-title">A.R.T</div>
+            <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" class="top-logo">
         </div>
 
-        <!-- BODY -->
-
         <div class="card-body">
-
             <div class="photo">
-
                 <img src="${photoURL}">
-
             </div>
 
             <div class="infos">
+                <div class="member-name">${prenom} ${nom}</div>
 
-                <div class="member-name">
-                ${prenom} ${nom}
-                </div>
-
-                <div class="info-line">
-                <span class="label">ID :</span> ${idCarte}
-                </div>
-
-                <div class="info-line">
-                <span class="label">Pays de résidence :</span> ${pays}
-                </div>
-
-                <div class="info-line">
-                <span class="label">Date de naissance :</span> ${dob}
-                </div>
-
-                <div class="info-line">
-                <span class="label">Lieu de naissance :</span> ${lieuNaissance}
-                </div>
-
-                <div class="info-line">
-                <span class="label">Fonction :</span> ${fonction}
-                </div>
-
+                <div class="info-line"><span class="label">ID :</span> ${idCarte}</div>
+                <div class="info-line"><span class="label">Pays :</span> ${pays}</div>
+                <div class="info-line"><span class="label">Naissance :</span> ${dob}</div>
+                <div class="info-line"><span class="label">Lieu :</span> ${lieuNaissance}</div>
+                <div class="info-line"><span class="label">Fonction :</span> ${fonction}</div>
             </div>
-
         </div>
 
-        <!-- QR -->
+        <div class="qr"></div>
 
-        <div class="qr" id="qr-${safeId}">
-        </div>
-
-        <!-- DELETE -->
-
-        <button class="delete-btn">
-        ×
-        </button>
-
+        <button class="delete-btn">×</button>
         `;
 
         cardsContainer.appendChild(card);
 
-        /* QR CODE */
+        const qrElement = card.querySelector(".qr");
+        qrElement.innerHTML = "";
 
-        new QRCode(document.getElementById(`qr-${safeId}`), {
-
-            text:`https://kewere.com/member/${safeId}`,
-
-            width:45,
-
-            height:45
-
+        new QRCode(qrElement, {
+            text: "https://kewere.com/member/" + idCarte,
+            width: 45,
+            height: 45
         });
 
-        /* DELETE */
-
-        card.querySelector(".delete-btn")
-
-        .addEventListener("click", ()=>{
-
+        card.querySelector(".delete-btn").addEventListener("click", ()=>{
             card.remove();
-
         });
 
         form.reset();
-
-    };
-
-    /* PHOTO */
-
-    if(photoInput.files[0]){
-
-        const reader = new FileReader();
-
-        reader.onload = function(e){
-
-            photoURL = e.target.result;
-
-            createCard();
-
-        };
-
-        reader.readAsDataURL(photoInput.files[0]);
-
     }
 
-    else{
-
+    if(photoInput.files[0]){
+        const reader = new FileReader();
+        reader.onload = e=>{
+            photoURL = e.target.result;
+            createCard();
+        };
+        reader.readAsDataURL(photoInput.files[0]);
+    } else {
         createCard();
-
     }
 
 });
