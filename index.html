@@ -137,8 +137,8 @@ form button{
 .infos{
     display:flex;
     flex-direction:column;
-    gap:5px;
-    font-size:10px;
+    gap:4px;
+    font-size:9px;
     padding-right:60px;
 }
 
@@ -260,6 +260,9 @@ form button{
 <label>Lieu de naissance</label>
 <input type="text" id="lieuNaissance" required>
 
+<label>Numéro WhatsApp</label>
+<input type="text" id="telephone" required>
+
 <label>Photo</label>
 <input type="file" id="photo">
 
@@ -291,8 +294,10 @@ form.addEventListener("submit", function(e){
     const pays = document.getElementById("pays").value;
     const dob = document.getElementById("dob").value;
     const lieuNaissance = document.getElementById("lieuNaissance").value;
+    const telephone = document.getElementById("telephone").value;
 
     let idCarte = document.getElementById("idCarte").value;
+
     if(!idCarte){
         idCarte = "KWR" + Date.now().toString().slice(-6);
     }
@@ -304,29 +309,66 @@ form.addEventListener("submit", function(e){
     function createCard(){
 
         const card = document.createElement("div");
+
         card.classList.add("card");
 
         card.innerHTML = `
         <div class="card-header">
-            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="top-logo">
-            <div class="header-title">A.R.T</div>
-            <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" class="top-logo">
+
+            <img 
+            src="images/logo-art.png" 
+            class="top-logo"
+            >
+
+            <div class="header-title">
+            Republique de Guinée
+            </div>
+
+            <img 
+            src="images/mains.png" 
+            class="top-logo"
+            >
+
         </div>
 
         <div class="card-body">
+
             <div class="photo">
                 <img src="${photoURL}">
             </div>
 
             <div class="infos">
-                <div class="member-name">${prenom} ${nom}</div>
 
-                <div class="info-line"><span class="label">ID :</span> ${idCarte}</div>
-                <div class="info-line"><span class="label">Pays :</span> ${pays}</div>
-                <div class="info-line"><span class="label">Naissance :</span> ${dob}</div>
-                <div class="info-line"><span class="label">Lieu :</span> ${lieuNaissance}</div>
-                <div class="info-line"><span class="label">Fonction :</span> ${fonction}</div>
+                <div class="member-name">
+                ${prenom} ${nom}
+                </div>
+
+                <div class="info-line">
+                <span class="label">ID :</span> ${idCarte}
+                </div>
+
+                <div class="info-line">
+                <span class="label">Pays :</span> ${pays}
+                </div>
+
+                <div class="info-line">
+                <span class="label">Naissance :</span> ${dob}
+                </div>
+
+                <div class="info-line">
+                <span class="label">Lieu :</span> ${lieuNaissance}
+                </div>
+
+                <div class="info-line">
+                <span class="label">WhatsApp :</span> ${telephone}
+                </div>
+
+                <div class="info-line">
+                <span class="label">Fonction :</span> ${fonction}
+                </div>
+
             </div>
+
         </div>
 
         <div class="qr"></div>
@@ -337,12 +379,13 @@ form.addEventListener("submit", function(e){
         cardsContainer.appendChild(card);
 
         const qrElement = card.querySelector(".qr");
+
         qrElement.innerHTML = "";
 
         new QRCode(qrElement, {
-            text: "https://kewere.com/member/" + idCarte,
-            width: 45,
-            height: 45
+            text: "Pottal Misside Lambecare",
+            width: 40,
+            height: 40
         });
 
         card.querySelector(".delete-btn").addEventListener("click", ()=>{
@@ -353,14 +396,20 @@ form.addEventListener("submit", function(e){
     }
 
     if(photoInput.files[0]){
+
         const reader = new FileReader();
+
         reader.onload = e=>{
             photoURL = e.target.result;
             createCard();
         };
+
         reader.readAsDataURL(photoInput.files[0]);
+
     } else {
+
         createCard();
+
     }
 
 });
