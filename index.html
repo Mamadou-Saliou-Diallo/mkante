@@ -77,17 +77,14 @@ form button{
     justify-content:center;
 }
 
-/* CARTE PVC */
+/* CARD PVC */
 .card{
     width:85.6mm;
     height:54mm;
     border-radius:10px;
-
     background:linear-gradient(135deg,#003366,#0055aa,#0077cc);
-
     position:relative;
     overflow:hidden;
-
     color:white;
     box-shadow:0 10px 20px rgba(0,0,0,0.25);
 }
@@ -182,7 +179,7 @@ form button{
     cursor:pointer;
 }
 
-/* 🖨️ PRINT MODE PVC VERTICAL */
+/* ================= PRINT ================= */
 @media print {
 
     body{
@@ -197,26 +194,18 @@ form button{
     }
 
     #cardsContainer{
-        display:flex;
-        flex-direction:column;
-
-        align-items:center;
-        justify-content:flex-start;
-
-        gap:6mm;
-
-        padding:10mm;
+        width:210mm;
+        margin:0 auto;
     }
 
     .card{
-        width:85.6mm;
-        height:54mm;
-
+        margin:0 auto 10mm auto;
         box-shadow:none !important;
         page-break-inside: avoid;
+    }
 
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
+    .card:nth-child(3n){
+        page-break-after: always;
     }
 }
 
@@ -251,26 +240,24 @@ form button{
 <label>ID Carte</label>
 <input type="text" id="idCarte" placeholder="Automatique si vide">
 
-<label>Pays de résidence</label>
+<label>Pays</label>
 <input type="text" id="pays" required>
 
-<label>Date de naissance</label>
+<label>Date naissance</label>
 <input type="date" id="dob" required>
 
-<label>Lieu de naissance</label>
+<label>Lieu naissance</label>
 <input type="text" id="lieuNaissance" required>
 
-<label>Numéro WhatsApp</label>
+<label>WhatsApp</label>
 <input type="text" id="telephone" required>
 
 <label>Photo</label>
 <input type="file" id="photo">
 
 <button type="submit">Créer la carte</button>
-
-<button type="button" onclick="window.print()">
-🖨️ Imprimer PVC
-</button>
+<button type="button" onclick="window.print()">🖨️ Imprimer PVC</button>
+<button type="button" onclick="downloadPDF()">📥 Télécharger PDF</button>
 
 </form>
 
@@ -279,140 +266,124 @@ form button{
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
 
+const { jsPDF } = window.jspdf;
+
 const form = document.getElementById("cardForm");
-const cardsContainer = document.getElementById("cardsContainer");
+const container = document.getElementById("cardsContainer");
 
 form.addEventListener("submit", function(e){
     e.preventDefault();
 
-    const nom = document.getElementById("nom").value;
-    const prenom = document.getElementById("prenom").value;
-    const fonction = document.getElementById("fonction").value;
-    const pays = document.getElementById("pays").value;
-    const dob = document.getElementById("dob").value;
-    const lieuNaissance = document.getElementById("lieuNaissance").value;
-    const telephone = document.getElementById("telephone").value;
+    let nom = document.getElementById("nom").value;
+    let prenom = document.getElementById("prenom").value;
+    let fonction = document.getElementById("fonction").value;
+    let pays = document.getElementById("pays").value;
+    let dob = document.getElementById("dob").value;
+    let lieu = document.getElementById("lieuNaissance").value;
+    let tel = document.getElementById("telephone").value;
 
-    let idCarte = document.getElementById("idCarte").value;
+    let id = document.getElementById("idCarte").value;
+    if(!id) id = "PVC-" + Math.random().toString(36).substr(2,6).toUpperCase();
 
-    if(!idCarte){
-        idCarte = "KWR" + Date.now().toString().slice(-6);
-    }
-
-    const photoInput = document.getElementById("photo");
-
+    let photoInput = document.getElementById("photo");
     let photoURL = "https://via.placeholder.com/150";
 
-    function createCard(){
+    function create(){
 
-        const card = document.createElement("div");
-
-        card.classList.add("card");
+        let card = document.createElement("div");
+        card.className = "card";
 
         card.innerHTML = `
         <div class="card-header">
-
-            <img 
-            src="images/logo-art.png" 
-            class="top-logo"
-            >
-
-            <div class="header-title">
-            Republique de Guinée
-            </div>
-
-            <img 
-            src="images/mains.png" 
-            class="top-logo"
-            >
-
+            <img src="images/logo-art.png" class="top-logo">
+            <div class="header-title">République de Guinée</div>
+            <img src="images/mains.png" class="top-logo">
         </div>
 
         <div class="card-body">
-
-            <div class="photo">
-                <img src="${photoURL}">
-            </div>
+            <div class="photo"><img src="${photoURL}"></div>
 
             <div class="infos">
-
-                <div class="member-name">
-                ${prenom} ${nom}
-                </div>
-
-                <div class="info-line">
-                <span class="label">ID :</span> ${idCarte}
-                </div>
-
-                <div class="info-line">
-                <span class="label">Pays :</span> ${pays}
-                </div>
-
-                <div class="info-line">
-                <span class="label">Naissance :</span> ${dob}
-                </div>
-
-                <div class="info-line">
-                <span class="label">Lieu :</span> ${lieuNaissance}
-                </div>
-
-                <div class="info-line">
-                <span class="label">WhatsApp :</span> ${telephone}
-                </div>
-
-                <div class="info-line">
-                <span class="label">Fonction :</span> ${fonction}
-                </div>
-
+                <div class="member-name">${prenom} ${nom}</div>
+                <div class="info-line"><span class="label">ID:</span> ${id}</div>
+                <div class="info-line"><span class="label">Pays:</span> ${pays}</div>
+                <div class="info-line"><span class="label">Naissance:</span> ${dob}</div>
+                <div class="info-line"><span class="label">Lieu:</span> ${lieu}</div>
+                <div class="info-line"><span class="label">Tel:</span> ${tel}</div>
+                <div class="info-line"><span class="label">Fonction:</span> ${fonction}</div>
             </div>
-
         </div>
 
         <div class="qr"></div>
-
         <button class="delete-btn">×</button>
         `;
 
-        cardsContainer.appendChild(card);
+        container.appendChild(card);
 
-        const qrElement = card.querySelector(".qr");
-
-        qrElement.innerHTML = "";
-
-        new QRCode(qrElement, {
-            text: "Pottal Misside Lambecare",
+        new QRCode(card.querySelector(".qr"), {
+            text: `${prenom} ${nom} | ${id}`,
             width: 40,
             height: 40
         });
 
-        card.querySelector(".delete-btn").addEventListener("click", ()=>{
-            card.remove();
-        });
+        card.querySelector(".delete-btn").onclick = () => card.remove();
 
         form.reset();
     }
 
     if(photoInput.files[0]){
-
-        const reader = new FileReader();
-
-        reader.onload = e=>{
+        let reader = new FileReader();
+        reader.onload = e => {
             photoURL = e.target.result;
-            createCard();
+            create();
         };
-
         reader.readAsDataURL(photoInput.files[0]);
-
     } else {
-
-        createCard();
-
+        create();
     }
-
 });
+
+
+// ================= PDF =================
+function downloadPDF(){
+
+    const cards = document.querySelectorAll(".card");
+    const pdf = new jsPDF("p","mm","a4");
+
+    const cardW = 85.6;
+    const cardH = 54;
+
+    const x = 62;
+    const yPos = [20, 110, 200];
+
+    let promises = [];
+
+    cards.forEach((card, i) => {
+
+        let p = html2canvas(card, {scale:3}).then(canvas => {
+
+            const img = canvas.toDataURL("image/png");
+
+            if(i > 0 && i % 3 === 0){
+                pdf.addPage();
+            }
+
+            pdf.addImage(img, "PNG", x, yPos[i % 3], cardW, cardH);
+        });
+
+        promises.push(p);
+    });
+
+    Promise.all(promises).then(() => {
+        pdf.save("cartes-membres.pdf");
+    });
+
+}
 
 </script>
 
