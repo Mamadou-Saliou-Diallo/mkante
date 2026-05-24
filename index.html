@@ -179,7 +179,7 @@ form button{
     cursor:pointer;
 }
 
-/* ================= PRINT ================= */
+/* PRINT */
 @media print {
 
     body{
@@ -204,12 +204,11 @@ form button{
         page-break-inside: avoid;
     }
 
-        .card:nth-child(3n):not(:last-child){
+    .card:nth-child(3n):not(:last-child){
         page-break-after: always;
     }
 }
 
-/* RESPONSIVE */
 @media(max-width:768px){
     .container{
         flex-direction:column;
@@ -257,13 +256,9 @@ form button{
 
 <button type="submit">Créer la carte</button>
 
-<button type="button" onclick="window.print()">
-🖨️ Imprimer PVC
-</button>
+<button type="button" onclick="window.print()">🖨️ Imprimer PVC</button>
 
-<button type="button" onclick="downloadPDF()">
-📥 Télécharger PDF
-</button>
+<button type="button" onclick="downloadPDF()">📥 Télécharger PDF</button>
 
 </form>
 
@@ -271,7 +266,7 @@ form button{
 
 </div>
 
-<!-- QR CODE -->
+<!-- QR -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <!-- HTML2CANVAS -->
@@ -310,6 +305,13 @@ form.addEventListener("submit", function(e){
 
     function createCard(){
 
+        let today = new Date();
+        let emission = today.toLocaleDateString("fr-FR");
+
+        let exp = new Date();
+        exp.setFullYear(today.getFullYear() + 3);
+        let expiration = exp.toLocaleDateString("fr-FR");
+
         let card = document.createElement("div");
         card.className = "card";
 
@@ -334,40 +336,23 @@ form.addEventListener("submit", function(e){
 
             <div class="infos">
 
-                <div class="member-name">
-                    ${prenom} ${nom}
-                </div>
+                <div class="member-name">${prenom} ${nom}</div>
 
-                <div class="info-line">
-                    <span class="label">ID :</span> ${id}
-                </div>
+                <div class="info-line"><span class="label">ID :</span> ${id}</div>
+                <div class="info-line"><span class="label">Pays :</span> ${pays}</div>
+                <div class="info-line"><span class="label">Naissance :</span> ${dob}</div>
+                <div class="info-line"><span class="label">Lieu :</span> ${lieu}</div>
+                <div class="info-line"><span class="label">WhatsApp :</span> ${tel}</div>
+                <div class="info-line"><span class="label">Fonction :</span> ${fonction}</div>
 
-                <div class="info-line">
-                    <span class="label">Pays :</span> ${pays}
-                </div>
-
-                <div class="info-line">
-                    <span class="label">Naissance :</span> ${dob}
-                </div>
-
-                <div class="info-line">
-                    <span class="label">Lieu :</span> ${lieu}
-                </div>
-
-                <div class="info-line">
-                    <span class="label">WhatsApp :</span> ${tel}
-                </div>
-
-                <div class="info-line">
-                    <span class="label">Fonction :</span> ${fonction}
-                </div>
+                <div class="info-line"><span class="label">Émission :</span> ${emission}</div>
+                <div class="info-line"><span class="label">Expiration :</span> ${expiration}</div>
 
             </div>
 
         </div>
 
         <div class="qr"></div>
-
         <button class="delete-btn">×</button>
         `;
 
@@ -379,35 +364,28 @@ form.addEventListener("submit", function(e){
             height: 60
         });
 
-        card.querySelector(".delete-btn").onclick = () => {
-            card.remove();
-        };
+        card.querySelector(".delete-btn").onclick = () => card.remove();
 
         form.reset();
     }
 
     if(photoInput.files[0]){
-
         let reader = new FileReader();
 
         reader.onload = e => {
-
             photoURL = e.target.result;
-
             createCard();
         };
 
         reader.readAsDataURL(photoInput.files[0]);
-
-    }else{
-
+    } else {
         createCard();
     }
 
 });
 
 
-// ================= PDF =================
+// ================= PDF FIX FINAL =================
 function downloadPDF(){
 
     const cards = document.querySelectorAll(".card");
@@ -422,47 +400,47 @@ function downloadPDF(){
     const cardWidth = 85.6;
     const cardHeight = 54;
 
-    // centrage horizontal
     const x = (210 - cardWidth) / 2;
 
-    // positions verticales fixes
     const yPositions = [20, 110, 200];
 
     let promises = [];
 
     cards.forEach((card, index) => {
 
-        let promise = html2canvas(card, {
-            scale:3,
-            useCORS:true
+        // 🔥 FIX IMPORTANT : CLONE POUR ÉVITER COUPURE DES DATES
+        const clone = card.cloneNode(true);
+        clone.style.overflow = "visible";
+        clone.style.height = "auto";
+        clone.style.position = "absolute";
+        clone.style.left = "-9999px";
+
+        document.body.appendChild(clone);
+
+        let promise = html2canvas(clone, {
+            scale: 3,
+            useCORS: true,
+            backgroundColor: null,
+            scrollX: 0,
+            scrollY: 0
         }).then(canvas => {
 
             const imgData = canvas.toDataURL("image/png");
 
-            // nouvelle page chaque 3 cartes
             if(index > 0 && index % 3 === 0){
                 pdf.addPage();
             }
 
-            pdf.addImage(
-                imgData,
-                "PNG",
-                x,
-                yPositions[index % 3],
-                cardWidth,
-                cardHeight
-            );
+            pdf.addImage(imgData, "PNG", x, yPositions[index % 3], cardWidth, cardHeight);
 
+            document.body.removeChild(clone);
         });
 
         promises.push(promise);
-
     });
 
     Promise.all(promises).then(() => {
-
         pdf.save("cartes-membres.pdf");
-
     });
 
 }
