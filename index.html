@@ -158,8 +158,8 @@ form button{
 /* QR */
 .qr{
     position:absolute;
-    bottom:10px;
-    right:10px;
+    bottom:8px;
+    right:8px;
     background:white;
     padding:4px;
     border-radius:6px;
@@ -204,7 +204,7 @@ form button{
         page-break-inside: avoid;
     }
 
-    .card:nth-child(3n){
+        .card:nth-child(3n):not(:last-child){
         page-break-after: always;
     }
 }
@@ -222,7 +222,7 @@ form button{
 
 <body>
 
-<h2 class="main-title">Générateur Carte Membre - PVC PRO</h2>
+<h2 class="main-title">KWR Générateur Carte Membre Pour ART</h2>
 
 <div class="container">
 
@@ -256,8 +256,14 @@ form button{
 <input type="file" id="photo">
 
 <button type="submit">Créer la carte</button>
-<button type="button" onclick="window.print()">🖨️ Imprimer PVC</button>
-<button type="button" onclick="downloadPDF()">📥 Télécharger PDF</button>
+
+<button type="button" onclick="window.print()">
+🖨️ Imprimer PVC
+</button>
+
+<button type="button" onclick="downloadPDF()">
+📥 Télécharger PDF
+</button>
 
 </form>
 
@@ -265,8 +271,13 @@ form button{
 
 </div>
 
+<!-- QR CODE -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<!-- HTML2CANVAS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<!-- JSPDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
@@ -277,6 +288,7 @@ const form = document.getElementById("cardForm");
 const container = document.getElementById("cardsContainer");
 
 form.addEventListener("submit", function(e){
+
     e.preventDefault();
 
     let nom = document.getElementById("nom").value;
@@ -288,64 +300,110 @@ form.addEventListener("submit", function(e){
     let tel = document.getElementById("telephone").value;
 
     let id = document.getElementById("idCarte").value;
-    if(!id) id = "PVC-" + Math.random().toString(36).substr(2,6).toUpperCase();
+
+    if(!id){
+        id = "ART-" + Math.random().toString(36).substr(2,6).toUpperCase();
+    }
 
     let photoInput = document.getElementById("photo");
     let photoURL = "https://via.placeholder.com/150";
 
-    function create(){
+    function createCard(){
 
         let card = document.createElement("div");
         card.className = "card";
 
         card.innerHTML = `
         <div class="card-header">
+
             <img src="images/logo-art.png" class="top-logo">
-            <div class="header-title">République de Guinée</div>
+
+            <div class="header-title">
+                République de Guinée
+            </div>
+
             <img src="images/mains.png" class="top-logo">
+
         </div>
 
         <div class="card-body">
-            <div class="photo"><img src="${photoURL}"></div>
+
+            <div class="photo">
+                <img src="${photoURL}">
+            </div>
 
             <div class="infos">
-                <div class="member-name">${prenom} ${nom}</div>
-                <div class="info-line"><span class="label">ID:</span> ${id}</div>
-                <div class="info-line"><span class="label">Pays:</span> ${pays}</div>
-                <div class="info-line"><span class="label">Naissance:</span> ${dob}</div>
-                <div class="info-line"><span class="label">Lieu:</span> ${lieu}</div>
-                <div class="info-line"><span class="label">Tel:</span> ${tel}</div>
-                <div class="info-line"><span class="label">Fonction:</span> ${fonction}</div>
+
+                <div class="member-name">
+                    ${prenom} ${nom}
+                </div>
+
+                <div class="info-line">
+                    <span class="label">ID :</span> ${id}
+                </div>
+
+                <div class="info-line">
+                    <span class="label">Pays :</span> ${pays}
+                </div>
+
+                <div class="info-line">
+                    <span class="label">Naissance :</span> ${dob}
+                </div>
+
+                <div class="info-line">
+                    <span class="label">Lieu :</span> ${lieu}
+                </div>
+
+                <div class="info-line">
+                    <span class="label">WhatsApp :</span> ${tel}
+                </div>
+
+                <div class="info-line">
+                    <span class="label">Fonction :</span> ${fonction}
+                </div>
+
             </div>
+
         </div>
 
         <div class="qr"></div>
+
         <button class="delete-btn">×</button>
         `;
 
         container.appendChild(card);
 
         new QRCode(card.querySelector(".qr"), {
-            text: `${prenom} ${nom} | ${id}`,
-            width: 40,
-            height: 40
+            text: "Pottal Misside Lambecare",
+            width: 60,
+            height: 60
         });
 
-        card.querySelector(".delete-btn").onclick = () => card.remove();
+        card.querySelector(".delete-btn").onclick = () => {
+            card.remove();
+        };
 
         form.reset();
     }
 
     if(photoInput.files[0]){
+
         let reader = new FileReader();
+
         reader.onload = e => {
+
             photoURL = e.target.result;
-            create();
+
+            createCard();
         };
+
         reader.readAsDataURL(photoInput.files[0]);
-    } else {
-        create();
+
+    }else{
+
+        createCard();
     }
+
 });
 
 
@@ -353,34 +411,58 @@ form.addEventListener("submit", function(e){
 function downloadPDF(){
 
     const cards = document.querySelectorAll(".card");
+
+    if(cards.length === 0){
+        alert("Aucune carte disponible.");
+        return;
+    }
+
     const pdf = new jsPDF("p","mm","a4");
 
-    const cardW = 85.6;
-    const cardH = 54;
+    const cardWidth = 85.6;
+    const cardHeight = 54;
 
-    const x = 62;
-    const yPos = [20, 110, 200];
+    // centrage horizontal
+    const x = (210 - cardWidth) / 2;
+
+    // positions verticales fixes
+    const yPositions = [20, 110, 200];
 
     let promises = [];
 
-    cards.forEach((card, i) => {
+    cards.forEach((card, index) => {
 
-        let p = html2canvas(card, {scale:3}).then(canvas => {
+        let promise = html2canvas(card, {
+            scale:3,
+            useCORS:true
+        }).then(canvas => {
 
-            const img = canvas.toDataURL("image/png");
+            const imgData = canvas.toDataURL("image/png");
 
-            if(i > 0 && i % 3 === 0){
+            // nouvelle page chaque 3 cartes
+            if(index > 0 && index % 3 === 0){
                 pdf.addPage();
             }
 
-            pdf.addImage(img, "PNG", x, yPos[i % 3], cardW, cardH);
+            pdf.addImage(
+                imgData,
+                "PNG",
+                x,
+                yPositions[index % 3],
+                cardWidth,
+                cardHeight
+            );
+
         });
 
-        promises.push(p);
+        promises.push(promise);
+
     });
 
     Promise.all(promises).then(() => {
+
         pdf.save("cartes-membres.pdf");
+
     });
 
 }
